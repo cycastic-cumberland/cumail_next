@@ -6,4 +6,4 @@ riderModule.iml
 .idea/
 config.json
 *.sln.DotSettings.user
-/.vs
+.vs/
