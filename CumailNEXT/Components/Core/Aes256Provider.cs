@@ -3,40 +3,46 @@ using System.Text;
 
 namespace CumailNEXT.Components.Core;
 
-public class Aes256Provider : IDisposable
+public class Aes256Provider
 {
-    private readonly Aes _provider;
+    private readonly byte[] _secret;
     
     public Aes256Provider(byte[] secret)
-        : this(secret, Crypto.GenerateSecureBytes(16))
     {
-    }
-    public Aes256Provider(byte[] secret, byte[] iv)
-    {
-        if (secret.Length != 32 || iv.Length != 16) throw new InvalidDataException("Incorrect bytes length");
-        _provider = Aes.Create();
-        _provider.Key = secret;
-        _provider.IV = iv;
+        if (secret.Length != 32) throw new InvalidDataException("Incorrect bytes length");
+        _secret = secret;
     }
     public string Encrypt(string plainText)
     {
-        var encryptor = _provider.CreateEncryptor(_provider.Key, _provider.IV);
-        var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-        var encryptedBytes = encryptor.TransformFinalBlock(plainTextBytes, 0, plainTextBytes.Length);
+        byte[] encryptedBytes;
+        using (var aes = Aes.Create())
+        {
+            aes.Key = _secret;
+            aes.IV = Crypto.GenerateSecureBytes(16);
+            var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+            var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+            encryptedBytes = encryptor.TransformFinalBlock(plainTextBytes, 0, plainTextBytes.Length);
+            encryptedBytes = aes.IV.Concat(encryptedBytes).ToArray();
+        }
 
         return Convert.ToBase64String(encryptedBytes);
     }
     public string Decrypt(string encryptedText)
     {
-        var decryptor = _provider.CreateDecryptor(_provider.Key, _provider.IV);
-        var encryptedBytes = Convert.FromBase64String(encryptedText);
-        var decryptedBytes = decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+        byte[] decryptedBytes;
+        using (var aes = Aes.Create())
+        {
+            var fullBytes = Convert.FromBase64String(encryptedText);
+            var iv = fullBytes[..16];
+            var encryptedBytes = fullBytes[16..];
+
+            aes.Key = _secret;
+            aes.IV = iv;
+            var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+            decryptedBytes = decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+            
+        }
         
         return Encoding.UTF8.GetString(decryptedBytes);
-    }
-
-    public void Dispose()
-    {
-        _provider.Dispose();
     }
 }
