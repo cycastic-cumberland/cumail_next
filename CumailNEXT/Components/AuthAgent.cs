@@ -13,4 +13,9 @@ public abstract class AuthAgent : AuthProvider
         UserGen = userGen;
         Tokenizer = tokenizer;
     }
+
+    public override void Dispose()
+    {
+        Tokenizer.Dispose();
+    }
 }

@@ -63,13 +63,14 @@ public class UserUuidQuery
     public AuthUser this[string key] => _query.GetUserByUuid(key);
 }
 
-public abstract class AuthQuery
+public abstract class AuthQuery : IDisposable
 {
     public const int Timeout = 3000;
     protected readonly ReaderWriterLock RwLock;
     public readonly UserIdQuery ById;
     public readonly UserUuidQuery ByUuid;
 
+    public virtual void Dispose() {}
     public AuthQuery()
     {
         ById = new UserIdQuery(this);

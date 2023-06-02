@@ -18,6 +18,7 @@ public class Engine
     private static PostgresChatAppQueryFactory? _appQueryFactory = null;
     private static QueuedChatHubStorage? _hubStorageFactory = null;
     private static MonolithicChatAppFactory? _chatAppFactory = null;
+    private static byte[]? _tokenIV = null;
     public const string ConfigFileName = "config.json";
     public static RedisProvider RedisDb
     {
@@ -128,6 +129,19 @@ public class Engine
             }
 
             return _hubStorageFactory;
+        }
+    }
+
+    public static byte[] TokenInitVector
+    {
+        get
+        {
+            lock (InstanceLock)
+            {
+                _tokenIV ??= Crypto.GenerateSecureBytes(16);
+            }
+
+            return _tokenIV;
         }
     }
 

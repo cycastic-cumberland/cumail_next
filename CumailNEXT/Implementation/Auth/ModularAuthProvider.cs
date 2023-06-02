@@ -14,6 +14,6 @@ public class ModularAuthProvider : TokenBasedAuthProvider<DefaultAuthAgent>
 
     public override void OnSignupSuccess(Func<AuthUser, SignupIntervention> action)
     {
-        AuthAgent.OnSignupSuccess(action);
+        Agent.OnSignupSuccess(action);
     }
 }

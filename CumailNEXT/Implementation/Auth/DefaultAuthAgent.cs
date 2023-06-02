@@ -2,7 +2,6 @@ using System.Text.RegularExpressions;
 using Cumail_REST_API.Components.Auth;
 using CumailNEXT.Components;
 using CumailNEXT.Components.Auth;
-using CumailNEXT.Components.Core;
 using CumailNEXT.Implementation.Core;
 
 namespace CumailNEXT.Implementation.Auth;

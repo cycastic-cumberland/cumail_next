@@ -3,66 +3,40 @@ using System.Text;
 
 namespace CumailNEXT.Components.Core;
 
-public class Aes256Provider
+public class Aes256Provider : IDisposable
 {
-    private readonly byte[] key;
-    private readonly byte[] iv;
-    private readonly Aes aes;
-    public Aes256Provider(byte[] key, byte[] iv)
+    private readonly Aes _provider;
+    
+    public Aes256Provider(byte[] secret)
+        : this(secret, Crypto.GenerateSecureBytes(16))
     {
-        this.key = key;
-        this.iv = iv;
+    }
+    public Aes256Provider(byte[] secret, byte[] iv)
+    {
+        if (secret.Length != 32 || iv.Length != 16) throw new InvalidDataException("Incorrect bytes length");
+        _provider = Aes.Create();
+        _provider.Key = secret;
+        _provider.IV = iv;
+    }
+    public string Encrypt(string plainText)
+    {
+        var encryptor = _provider.CreateEncryptor(_provider.Key, _provider.IV);
+        var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+        var encryptedBytes = encryptor.TransformFinalBlock(plainTextBytes, 0, plainTextBytes.Length);
+
+        return Convert.ToBase64String(encryptedBytes);
+    }
+    public string Decrypt(string encryptedText)
+    {
+        var decryptor = _provider.CreateDecryptor(_provider.Key, _provider.IV);
+        var encryptedBytes = Convert.FromBase64String(encryptedText);
+        var decryptedBytes = decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
         
-        aes = Aes.Create();
-        aes.KeySize = 256;
-        aes.BlockSize = 128;
-        aes.Padding = PaddingMode.Zeros;
-
-        aes.Key = key;
-        aes.IV = iv;
+        return Encoding.UTF8.GetString(decryptedBytes);
     }
 
-    private byte[] PerformCryptography(byte[] data, ICryptoTransform cryptoTransform)
+    public void Dispose()
     {
-        using var ms = new MemoryStream();
-        using var cryptoStream = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Write);
-        cryptoStream.Write(data, 0, data.Length);
-        cryptoStream.FlushFinalBlock();
-
-        return ms.ToArray();
-    }
-    public byte[] Encrypt(string text)
-    {
-        using var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-        return PerformCryptography(Encoding.ASCII.GetBytes(text), encryptor);
-    }
-
-    public string EncryptBase64(string text)
-    {
-        return (Convert.ToBase64String(Encrypt(text)));
-    }
-
-    public string Decrypt(byte[] cipher)
-    {
-        // foreach (var c in cipher)
-        // {
-        //     Console.Write(c);
-        // }
-        // Console.WriteLine();
-        using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-        var raw = PerformCryptography(cipher, decryptor);
-        return Encoding.ASCII.GetString(raw);
-    }
-
-    public string? DecryptBase64Safe(string base64Text)
-    {
-        try
-        {
-            return Decrypt(Convert.FromBase64String((base64Text)));
-        }
-        catch (CryptographicException)
-        {
-            return null;
-        }
+        _provider.Dispose();
     }
 }
