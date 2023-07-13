@@ -68,7 +68,7 @@ public class Engine
             lock (InstanceLock)
             {
                 if (_auth != null) return _auth;
-                _auth = new ModularAuthProvider(RedisDb, ProjectSettings.Instance.Get(SettingsCatalog.AuthTokenSecret, ""));
+                _auth = new ModularAuthProvider(new MonolithicRedisAuthQuery(RedisDb), ProjectSettings.Instance.Get(SettingsCatalog.AuthTokenSecret, ""));
                 _auth.OnSignupSuccess(user =>
                 {
                     try

@@ -5,8 +5,8 @@ namespace CumailNEXT.Implementation.Auth;
 
 public class ModularAuthProvider : TokenBasedAuthProvider<DefaultAuthAgent>
 {
-    public ModularAuthProvider(RedisProvider mainDb, string tokenSecret) 
-        : base(new DefaultAuthAgent(new MonolithicRedisAuthQuery(mainDb),
+    public ModularAuthProvider(AuthQuery query, string tokenSecret) 
+        : base(new DefaultAuthAgent(query,
             new BCryptUserGen(),
             new JwtTokenProvider(tokenSecret)))
     {
