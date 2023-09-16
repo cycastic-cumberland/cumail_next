@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using Auth;
 using ExtendedComponents.Core;
 
-namespace RedisAuth.Auth;
+namespace ExtendedComponents.Auth;
 
 public class DefaultAuthAgent : AuthAgent
 {

@@ -3,7 +3,7 @@ using Auth;
 using CoreComponents.Core;
 using Newtonsoft.Json;
 
-namespace RedisAuth.Auth;
+namespace ExtendedComponents.Auth;
 
 public class Aes256BasedTokenProvider : AuthTokenProvider
 {

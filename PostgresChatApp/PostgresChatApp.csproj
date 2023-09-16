@@ -16,8 +16,5 @@
       <PackageReference Include="Npgsql" Version="7.0.4" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="ChatApp\Exceptions\" />
-    </ItemGroup>
 
 </Project>

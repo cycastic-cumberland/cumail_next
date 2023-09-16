@@ -5,7 +5,7 @@ using Auth;
 using ExtendedComponents.Core;
 using Microsoft.IdentityModel.Tokens;
 
-namespace RedisAuth.Auth;
+namespace ExtendedComponents.Auth;
 
 public class JwtTokenProvider : AuthTokenProvider
 {

@@ -1,140 +1,42 @@
 using System.Reflection;
 using Auth;
-using ChatApp;
-using ChatApp.Tables;
 using CoreComponents.Core;
-using CumailNEXT.Components.ChatApp;
 using CumailNEXT.Implementation.ChatApp;
+using ExtendedComponents.Auth;
 using ExtendedComponents.Core;
 using Newtonsoft.Json;
 using PostgresChatApp.ChatApp;
-using PostgresChatApp.Database;
-using RedisAuth.Auth;
-using RedisAuth.Database;
 
 namespace CumailNEXT.Implementation.Core;
+
+internal class JwtTokenizerFactory : TokenizerFactory
+{
+    public override AuthTokenProvider Create(string secret) => new JwtTokenProvider(secret);
+}
+
+internal class BCryptUserGenFactory : UserGenFactory
+{
+    public override AuthUserGenerator Create() => new BCryptUserGen();
+}
 
 public class Engine
 {
     private static readonly object InstanceLock = new double();
-    private static RedisProvider? _redis = null;
-    private static AuthProvider? _auth = null;
+    private static AuthProvider? _auth;
     private static PostgresChatAppQueryFactory? _appQueryFactory = null;
     private static QueuedChatHubStorage? _hubStorageFactory = null;
     private static MonolithicChatAppFactory? _chatAppFactory = null;
     private static byte[]? _tokenIV = null;
     public const string ConfigFileName = "config.json";
-    public static RedisProvider RedisDb
-    {
-        get
-        {
-            lock (InstanceLock)
-            {
-                _redis ??= new RedisProvider(new RedisConnectionConfig
-                {
-                    Address = ProjectSettings.Instance.Get(SettingsCatalog.AuthDbEndpoint, ""),
-                    Username = ProjectSettings.Instance.Get(SettingsCatalog.AuthDbUsername, ""),
-                    Password = ProjectSettings.Instance.Get(SettingsCatalog.AuthDbPassword, "")
-                });
-            }
 
-            return _redis;
-        }
-    }
-
-    public static PostgresConnectionSettings PostgresConnectionSettings { get; } = new()
-    {
-        Address = ProjectSettings.Instance.Get(SettingsCatalog.ChatHubConnectionAddress, ""),
-        DatabaseName = ProjectSettings.Instance.Get(SettingsCatalog.ChatHubConnectionDatabaseName, ""),
-        Port = ProjectSettings.Instance.Get(SettingsCatalog.ChatHubConnectionPort, 0),
-        Username = ProjectSettings.Instance.Get(SettingsCatalog.ChatHubConnectionUsername, ""),
-        Password = ProjectSettings.Instance.Get(SettingsCatalog.ChatHubConnectionPassword, "")
-    };
-
-    public static PostgresChatAppQueryFactory AppQueryFactory
-    {
-        get
-        {
-            lock (InstanceLock)
-            {
-                _appQueryFactory ??= new PostgresChatAppQueryFactory(PostgresConnectionSettings);
-            }
-
-            return _appQueryFactory;
-        }
-    }
+    public static PostgresChatAppQueryFactory AppQueryFactory => _appQueryFactory!;
 
     public static PostgresChatAppQuery NewAppQuery => AppQueryFactory.NewQueryInstance();
-    public static AuthProvider Auth
-    {
-        get
-        {
-            lock (InstanceLock)
-            {
-                if (_auth != null) return _auth;
-                _auth = new ModularAuthProvider(new MonolithicRedisAuthQuery(RedisDb), ProjectSettings.Instance.Get(SettingsCatalog.AuthTokenSecret, ""));
-                _auth.OnSignupSuccess(user =>
-                {
-                    try
-                    {
-                        using ChatAppQuery appQuery = NewAppQuery;
-                        var success = false;
-                        appQuery.OpenTransaction((query, _) =>
-                        {
-                            var profile = query.GetUserById(user.UserUuid);
-                            if (profile != null)
-                            {
-                                query.RemoveUser(user.UserUuid);
-                            }
+    public static AuthProvider Auth => _auth!;
 
-                            var usernameRaw = user.UserLoginKey.Split('@')[0];
-                            var username = usernameRaw.Length <= 32 ? usernameRaw : Crypto.HashSha256String(user.UserLoginKey);
-                            query.AddUser(new UserProfile
-                            {
-                                UserId = user.UserUuid,
-                                UserName = username
-                            });
-                            success = true;
-                        });
-                        return success ? AuthProvider.SignupIntervention.Allow : AuthProvider.SignupIntervention.Reject;
-                    }
-                    catch (Exception)
-                    {
-                        return AuthProvider.SignupIntervention.Reject;
-                    }
-                });
+    public static MonolithicChatAppFactory ChatAppFactory => _chatAppFactory!;
 
-            }
-
-            return _auth;
-        }
-    }
-    public static MonolithicChatAppFactory ChatAppFactory
-    {
-        get
-        {
-            lock (InstanceLock)
-            {
-                _chatAppFactory ??= new MonolithicChatAppFactory(Auth, AppQueryFactory);
-            }
-
-            return _chatAppFactory;
-        }
-    }
-
-    public static QueuedChatHubStorage HubStorageFactory
-    {
-        get
-        {
-            lock (InstanceLock)
-            {
-                // TODO: Check this out lol
-                _hubStorageFactory ??= new NotQueuedChatHubStorage();
-            }
-
-            return _hubStorageFactory;
-        }
-    }
+    public static QueuedChatHubStorage HubStorageFactory => _hubStorageFactory!;
 
     public static byte[] TokenInitVector
     {
@@ -166,11 +68,9 @@ public class Engine
             ProjectSettings.Instance[pair.Key] = value;
         }
 
-        // Boot up components
-        var unused0 = RedisDb;
-        var unused1 = Auth;
-        var unused2 = AppQueryFactory;
-        var unused3 = HubStorageFactory;
-        var unused4 = ChatAppFactory;
+        _appQueryFactory = PostgresChatApp.SelfInitializer.CreateQueryFactory();
+        _auth = RedisAuth.SelfInitializer.Create(new PostgresChatApp.SelfInitializer(_appQueryFactory).Inject);
+        _hubStorageFactory = new NotQueuedChatHubStorage();
+        _chatAppFactory = new MonolithicChatAppFactory(Auth, AppQueryFactory);
     }
 }

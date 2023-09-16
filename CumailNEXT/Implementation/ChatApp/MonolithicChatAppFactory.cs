@@ -6,7 +6,7 @@ using ChatApp.Tables;
 using CoreComponents.Core;
 using ExtendedComponents.Core;
 
-namespace PostgresChatApp.ChatApp;
+namespace CumailNEXT.Implementation.ChatApp;
 
 public class MonolithicChatAppInstance : ChatAppInstance
 {

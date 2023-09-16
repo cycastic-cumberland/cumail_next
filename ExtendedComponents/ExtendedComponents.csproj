@@ -9,6 +9,8 @@
 
     <ItemGroup>
       <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.0" />
     </ItemGroup>
 
 
@@ -16,5 +18,11 @@
       <ProjectReference Include="..\Auth\Auth.csproj" />
       <ProjectReference Include="..\CoreComponents\CoreComponents.csproj" />
     </ItemGroup>
+
+
+
+
+
+
 
 </Project>
