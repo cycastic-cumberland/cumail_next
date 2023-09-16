@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+      <PackageReference Include="StackExchange.Redis" Version="2.6.122" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Auth\Auth.csproj" />
+      <ProjectReference Include="..\CoreComponents\CoreComponents.csproj" />
+      <ProjectReference Include="..\ExtendedComponents\ExtendedComponents.csproj" />
+    </ItemGroup>
+
+
+</Project>
