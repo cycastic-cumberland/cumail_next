@@ -7,14 +7,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-        <PackageReference Include="Dapper" Version="2.0.123" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.0-preview.7.23375.9" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Npgsql" Version="7.0.4" />
-        <PackageReference Include="StackExchange.Redis" Version="2.6.104" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.29.0" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Auth\Auth.csproj" />
+      <ProjectReference Include="..\ChatApp\ChatApp.csproj" />
+      <ProjectReference Include="..\CoreComponents\CoreComponents.csproj" />
+      <ProjectReference Include="..\ExtendedComponents\ExtendedComponents.csproj" />
+      <ProjectReference Include="..\PostgresChatApp\PostgresChatApp.csproj" />
+      <ProjectReference Include="..\RedisAuth\RedisAuth.csproj" />
+
+    </ItemGroup>
+
+
+
 
 </Project>

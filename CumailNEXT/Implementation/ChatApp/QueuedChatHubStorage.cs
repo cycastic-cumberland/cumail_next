@@ -1,6 +1,7 @@
-using CumailNEXT.Components.Auth;
-using CumailNEXT.Components.ChatApp;
-using CumailNEXT.Components.Paralex;
+using Auth;
+using ChatApp;
+using CoreComponents.Paralex;
+using PostgresChatApp.ChatApp;
 
 namespace CumailNEXT.Implementation.ChatApp;
 

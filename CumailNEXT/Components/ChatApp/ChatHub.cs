@@ -1,4 +1,5 @@
-using CumailNEXT.Components.ChatApp.Schemas;
+using ChatApp;
+using ChatApp.Schemas;
 using Microsoft.AspNetCore.SignalR;
 
 namespace CumailNEXT.Components.ChatApp;

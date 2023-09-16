@@ -1,8 +1,6 @@
-using Cumail_REST_API.Components.Auth;
-using CumailNEXT.Components.Auth;
+using Auth;
 using CumailNEXT.Implementation.Core;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 
 namespace CumailNEXT.Controllers;
 

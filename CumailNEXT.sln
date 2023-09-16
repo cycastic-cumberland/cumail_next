@@ -2,6 +2,18 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CumailNEXT", "CumailNEXT\CumailNEXT.csproj", "{769FEB23-781B-4A71-9E50-FEF8D8D5A07B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreComponents", "CoreComponents\CoreComponents.csproj", "{916A0936-98E4-4A71-986E-A6D770791DA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtendedComponents", "ExtendedComponents\ExtendedComponents.csproj", "{49B9A900-6A2F-4454-BC44-2217A7CEB294}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth", "Auth\Auth.csproj", "{CAA37DE8-D895-4E85-8862-98831228FD30}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApp", "ChatApp\ChatApp.csproj", "{3DA9D2BB-1E78-4384-9A90-39B745014307}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisAuth", "RedisAuth\RedisAuth.csproj", "{2E7B8A1F-975E-497D-BDD8-0EAEF69EF755}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostgresChatApp", "PostgresChatApp\PostgresChatApp.csproj", "{8D7A535E-7985-41B1-A946-45813E95DC36}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +24,29 @@ Global
 		{769FEB23-781B-4A71-9E50-FEF8D8D5A07B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{769FEB23-781B-4A71-9E50-FEF8D8D5A07B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{769FEB23-781B-4A71-9E50-FEF8D8D5A07B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{916A0936-98E4-4A71-986E-A6D770791DA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{916A0936-98E4-4A71-986E-A6D770791DA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{916A0936-98E4-4A71-986E-A6D770791DA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{916A0936-98E4-4A71-986E-A6D770791DA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49B9A900-6A2F-4454-BC44-2217A7CEB294}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49B9A900-6A2F-4454-BC44-2217A7CEB294}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49B9A900-6A2F-4454-BC44-2217A7CEB294}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49B9A900-6A2F-4454-BC44-2217A7CEB294}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAA37DE8-D895-4E85-8862-98831228FD30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAA37DE8-D895-4E85-8862-98831228FD30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAA37DE8-D895-4E85-8862-98831228FD30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAA37DE8-D895-4E85-8862-98831228FD30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DA9D2BB-1E78-4384-9A90-39B745014307}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DA9D2BB-1E78-4384-9A90-39B745014307}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DA9D2BB-1E78-4384-9A90-39B745014307}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DA9D2BB-1E78-4384-9A90-39B745014307}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E7B8A1F-975E-497D-BDD8-0EAEF69EF755}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E7B8A1F-975E-497D-BDD8-0EAEF69EF755}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E7B8A1F-975E-497D-BDD8-0EAEF69EF755}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E7B8A1F-975E-497D-BDD8-0EAEF69EF755}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D7A535E-7985-41B1-A946-45813E95DC36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D7A535E-7985-41B1-A946-45813E95DC36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D7A535E-7985-41B1-A946-45813E95DC36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D7A535E-7985-41B1-A946-45813E95DC36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

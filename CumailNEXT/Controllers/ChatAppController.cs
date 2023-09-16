@@ -1,7 +1,7 @@
-using CumailNEXT.Components.Auth;
-using CumailNEXT.Components.ChatApp.Schemas;
-using CumailNEXT.Implementation.ChatApp.Exceptions;
-using CumailNEXT.Implementation.ChatApp.Tables;
+using Auth;
+using ChatApp.Exceptions;
+using ChatApp.Schemas;
+using ChatApp.Tables;
 using CumailNEXT.Implementation.Core;
 using Microsoft.AspNetCore.Mvc;
 

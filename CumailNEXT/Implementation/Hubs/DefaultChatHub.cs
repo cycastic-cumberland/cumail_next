@@ -1,6 +1,7 @@
-using CumailNEXT.Components.Auth;
+using Auth;
+using ChatApp;
+using ChatApp.Schemas;
 using CumailNEXT.Components.ChatApp;
-using CumailNEXT.Components.ChatApp.Schemas;
 using CumailNEXT.Implementation.ChatApp;
 using Microsoft.AspNetCore.SignalR;
 
