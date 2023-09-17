@@ -3,6 +3,8 @@ using System.Reflection;
 using System.Text;
 using CoreComponents.Database;
 using Dapper;
+using ExtendedComponents.Core;
+using ExtendedComponents.Exceptions;
 using Npgsql;
 
 
@@ -58,24 +60,58 @@ public class PostgresConnectionSettings
 
 public class PostgresProvider : IDisposable
 {
-    private NpgsqlConnection? _conn = null;
-    // public NpgsqlConnection RawConnection => conn;
+    private readonly int _reconnectionTime;
+    private NpgsqlConnection? _conn;
+    private PostgresConnectionSettings? _lastConnection;
 
     public PostgresProvider()
     {
-        
+        _reconnectionTime = ProjectSettings.Instance.Get(SettingsCatalog.CoreDbMaxReconnectionTimeMs, 500);
     }
 
-    public PostgresProvider(PostgresConnectionSettings settings)
+    public PostgresProvider(PostgresConnectionSettings settings) : this()
     {
         Connect(settings);
     }
 
     public void Connect(PostgresConnectionSettings settings)
+        => ConnectAsync(settings).Wait();
+    
+    public async Task ConnectAsync(PostgresConnectionSettings settings)
     {
-        _conn?.Dispose();
-        _conn = new NpgsqlConnection(settings.ToString());
-        _conn.Open();
+        if (_conn != null) await _conn.DisposeAsync();
+        _lastConnection = settings;
+        // _conn = new NpgsqlConnection(_lastConnection.ToString());
+        var epoch = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        var retryCount = 0;
+        while (DateTimeOffset.Now.ToUnixTimeMilliseconds() - epoch < _reconnectionTime)
+        {
+            try
+            {
+                await ReconnectAsync();
+                return;
+            }
+            catch (NpgsqlException ex)
+            {
+                if (ex.ErrorCode != -2147467259)
+                    throw;
+                await Task.Delay(100);
+                retryCount++;
+            }
+        }
+
+        throw new ConnectionTimeoutException($"Failed to establish a connection after {retryCount} attempts.");
+    }
+
+    public void Reconnect()
+        => ReconnectAsync().Wait();
+    
+    public async Task ReconnectAsync()
+    {
+        if (_lastConnection == null) return;
+        if (_conn != null) await _conn.DisposeAsync();
+        _conn = new NpgsqlConnection(_lastConnection.ToString());
+        await _conn.OpenAsync();
     }
 
     public bool IsConnected()
@@ -88,28 +124,102 @@ public class PostgresProvider : IDisposable
     {
         return _conn.Query<T>(sql, param: param, transaction: transaction);
     }
-
-    public NpgsqlDataReader RawQuery(string sql, object? param = null)
+    
+    public async Task<IEnumerable<T>> MappedQueryAsync<T>(string sql, object? param = null, IDbTransaction? transaction = null)
     {
-        var command = new NpgsqlCommand(sql, _conn);
-        if (param == null) return command.ExecuteReader();
-        var properties = param.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        foreach (var prop in properties)
-        {
-            var value = prop.GetValue(param);
-            command.Parameters.AddWithValue($"@{prop.Name}", value ?? DBNull.Value);
-        }
-
-        return command.ExecuteReader();
+        return await _conn.QueryAsync<T>(sql, param: param, transaction: transaction);
     }
+    
     public int Execute(string sql, object? param = null, IDbTransaction? transaction = null)
     {
         return _conn.Execute(sql, param: param, transaction: transaction);
     }
+    
+    public async Task<int> ExecuteAsync(string sql, object? param = null, IDbTransaction? transaction = null)
+    {
+        return await _conn.ExecuteAsync(sql, param: param, transaction: transaction);
+    }
+
+    public IEnumerable<T> TryMappedQuery<T>(string sql, object? param = null, IDbTransaction? transaction = null)
+    {
+        var task = TryMappedQueryAsync<T>(sql, param, transaction);
+        task.Wait();
+        if (task.Exception != null) throw task.Exception;
+        return task.Result;
+    }
+
+    public int TryExecute(string sql, object? param = null, IDbTransaction? transaction = null)
+    {
+        var task = TryExecuteAsync(sql, param, transaction);
+        task.Wait();
+        if (task.Exception != null) throw task.Exception;
+        return task.Result;
+    }
+    
+    public async Task<IEnumerable<T>> TryMappedQueryAsync<T>(string sql, object? param = null,
+        IDbTransaction? transaction = null)
+    {
+        var epoch = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        var retryCount = 0;
+        while (DateTimeOffset.Now.ToUnixTimeMilliseconds() - epoch < _reconnectionTime)
+        {
+            try
+            {
+                return await MappedQueryAsync<T>(sql, param, transaction);
+            }
+            catch (NpgsqlException ex)
+            {
+                if (ex.ErrorCode != -2147467259)
+                {
+                    await Task.Delay(100);
+                    try
+                    {
+                        await ReconnectAsync();
+                    }
+                    catch (Exception)
+                    {
+                        retryCount++;
+                    }
+                }
+                else throw;
+            }
+        }
+        throw new ConnectionTimeoutException($"Failed to establish a connection after {retryCount} attempts.");
+    }
+
+    public async Task<int> TryExecuteAsync(string sql, object? param = null, IDbTransaction? transaction = null)
+    {
+        var epoch = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        var retryCount = 0;
+        while (DateTimeOffset.Now.ToUnixTimeMilliseconds() - epoch < _reconnectionTime)
+        {
+            try
+            {
+                return await ExecuteAsync(sql, param, transaction);
+            }
+            catch (NpgsqlException ex)
+            {
+                if (ex.ErrorCode != -2147467259)
+                {
+                    await Task.Delay(100);
+                    try
+                    {
+                        await ReconnectAsync();
+                    }
+                    catch (Exception)
+                    {
+                        retryCount++;
+                    }
+                }
+                else throw;
+            }
+        }
+        throw new ConnectionTimeoutException($"Failed to establish a connection after {retryCount} attempts.");
+    }
 
     public PostgresTransaction CreateTransaction()
     {
-        if (!IsConnected() || _conn == null) throw new DbConnectionFailedException();
+        if (_conn == null) throw new DbConnectionFailedException();
         return new PostgresTransaction(_conn.BeginTransaction());
     }
     public void Disconnect()

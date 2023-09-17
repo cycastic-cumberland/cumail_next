@@ -1,4 +1,7 @@
+using Auth;
 using ChatApp.Schemas;
+using ChatApp.Tables;
+using CoreComponents.Core;
 using CoreComponents.Database;
 
 namespace ChatApp;
@@ -317,6 +320,43 @@ public abstract class ChatAppQuery : IDisposable
         {
             transaction.RollBack();
             throw;
+        }
+    }
+}
+
+public class ChatAppInjector
+{
+    private readonly ChatAppQueryFactory _queryFactory;
+    public ChatAppInjector(ChatAppQueryFactory factory) => _queryFactory = factory;
+    
+    public AuthProvider.SignupIntervention Inject(AuthUser user)
+    {
+        try
+        {
+            using ChatAppQuery appQuery = _queryFactory.CreateInstance();
+            var success = false;
+            appQuery.OpenTransaction((query, _) =>
+            {
+                var profile = query.GetUserById(user.UserUuid);
+                if (profile != null)
+                {
+                    query.RemoveUser(user.UserUuid);
+                }
+
+                var usernameRaw = user.UserLoginKey.Split('@')[0];
+                var username = usernameRaw.Length <= 32 ? usernameRaw : Crypto.HashSha256String(user.UserLoginKey);
+                query.AddUser(new UserProfile
+                {
+                    UserId = user.UserUuid,
+                    UserName = username
+                });
+                success = true;
+            });
+            return success ? AuthProvider.SignupIntervention.Allow : AuthProvider.SignupIntervention.Reject;
+        }
+        catch (Exception)
+        {
+            return AuthProvider.SignupIntervention.Reject;
         }
     }
 }

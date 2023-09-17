@@ -16,6 +16,7 @@
       <ProjectReference Include="..\ChatApp\ChatApp.csproj" />
       <ProjectReference Include="..\CoreComponents\CoreComponents.csproj" />
       <ProjectReference Include="..\ExtendedComponents\ExtendedComponents.csproj" />
+      <ProjectReference Include="..\MongoDChatApp\MongoDChatApp.csproj" />
       <ProjectReference Include="..\PostgresChatApp\PostgresChatApp.csproj" />
       <ProjectReference Include="..\RedisAuth\RedisAuth.csproj" />
 

@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisAuth", "RedisAuth\Redi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostgresChatApp", "PostgresChatApp\PostgresChatApp.csproj", "{8D7A535E-7985-41B1-A946-45813E95DC36}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoDChatApp", "MongoDChatApp\MongoDChatApp.csproj", "{5C0E4597-A7A2-46B3-9B9B-3C9446BD809A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{8D7A535E-7985-41B1-A946-45813E95DC36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D7A535E-7985-41B1-A946-45813E95DC36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D7A535E-7985-41B1-A946-45813E95DC36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C0E4597-A7A2-46B3-9B9B-3C9446BD809A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C0E4597-A7A2-46B3-9B9B-3C9446BD809A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C0E4597-A7A2-46B3-9B9B-3C9446BD809A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C0E4597-A7A2-46B3-9B9B-3C9446BD809A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,7 +1,7 @@
 using ChatApp;
 using ChatApp.Schemas;
 
-namespace PostgresChatApp.ChatApp;
+namespace ExtendedComponents.ChatApp;
 
 public abstract class ChatAppQuerySql : ChatAppQuery
 {

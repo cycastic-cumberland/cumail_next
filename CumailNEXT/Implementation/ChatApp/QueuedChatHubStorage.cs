@@ -15,7 +15,7 @@ public class QueuedChatHubStorageInstance : QueuedChatHubStorage
     }
     public override AuthProvider Auth => _baseInstance.Auth;
     public override void AddConnection(string connectionId) => _baseInstance.AddConnection(connectionId);
-    public override PostgresChatAppQuery GetQuery(string connectionId) => _baseInstance.GetQuery(connectionId);
+    public override ChatAppQuery GetQuery(string connectionId) => _baseInstance.GetQuery(connectionId);
     public override void RemoveConnection(string connectionId) => _baseInstance.RemoveConnection(connectionId);
     public override TR ReadUsersGroups<TR>(Func<Dictionary<string, string>, Dictionary<string, string>, TR> action)
         => _baseInstance.ReadUsersGroups(action);
@@ -30,7 +30,7 @@ public class QueuedChatHubStorageInstance : QueuedChatHubStorage
 public class NotQueuedChatHubStorage : QueuedChatHubStorage
 {
     public override void AddConnection(string connectionId) => throw new NotImplementedException();
-    public override PostgresChatAppQuery GetQuery(string connectionId) => Core.Engine.NewAppQuery;
+    public override ChatAppQuery GetQuery(string connectionId) => Core.Engine.NewAppQuery;
     public override void RemoveConnection(string connectionId) => throw new NotImplementedException();
 }
 
@@ -38,7 +38,7 @@ public class QueuedChatHubStorage : ChatHubStorage
 {
     // 1st map: GroupId => PostgresChatAppQuery
     // 2nd map: GroupId => reference count
-    private readonly ReadWriteLock<Dictionary<string, PostgresChatAppQuery>, Dictionary<string, long>> _connectionMap = new(new(), new());
+    private readonly ReadWriteLock<Dictionary<string, ChatAppQuery>, Dictionary<string, long>> _connectionMap = new(new(), new());
     public QueuedChatHubStorage CreateInstance() => new QueuedChatHubStorageInstance(this);
     
     public virtual AuthProvider Auth => Core.Engine.Auth;
@@ -60,7 +60,7 @@ public class QueuedChatHubStorage : ChatHubStorage
     // Sacrificing durability check for faster speed
     // As long as my code is good, there's no need to worry about this
     // (Spoiler alert: my code isn't good)
-    private PostgresChatAppQuery GetQueryByGroup(string groupId)
+    private ChatAppQuery GetQueryByGroup(string groupId)
         => _connectionMap.Read((queriesMap, _) => queriesMap[groupId]);
     private void RemoveConnectionFromGroup(string groupId)
         => _connectionMap.Write((queriesMap, referencesMap) =>
@@ -95,7 +95,7 @@ public class QueuedChatHubStorage : ChatHubStorage
         AddConnectionToGroup(groupId);
     }
 
-    public virtual PostgresChatAppQuery GetQuery(string connectionId)
+    public virtual ChatAppQuery GetQuery(string connectionId)
     {
         var groupId = "";
         // Hubs will try to read general infos before creating records

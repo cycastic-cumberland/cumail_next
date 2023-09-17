@@ -16,7 +16,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Auth\Auth.csproj" />
+      <ProjectReference Include="..\ChatApp\ChatApp.csproj" />
       <ProjectReference Include="..\CoreComponents\CoreComponents.csproj" />
+
+
+
+
     </ItemGroup>
 
 

@@ -3,6 +3,7 @@ using ChatApp;
 using ChatApp.Schemas;
 using ChatApp.Tables;
 using CoreComponents.Database;
+using ExtendedComponents.ChatApp;
 using PostgresChatApp.Database;
 
 namespace PostgresChatApp.ChatApp;
@@ -54,12 +55,12 @@ public class PostgresChatAppQuery : ChatAppQuerySql
     protected override ITransaction CreateTransaction() => CreateTransactionInternal();
     private IEnumerable<T> ParameterizedQuery<T>(string sql, object? param = null)
     {
-        return _provider.MappedQuery<T>(sql, param, OngoingTransaction);
+        return _provider.TryMappedQuery<T>(sql, param, OngoingTransaction);
     }
 
     private int ExecuteQuery(string query, object? param = null)
     {
-        return _provider.Execute(query, param, OngoingTransaction);
+        return _provider.TryExecute(query, param, OngoingTransaction);
     }
 
     public PostgresChatAppQuery(PostgresConnectionSettings connectionSettings)
